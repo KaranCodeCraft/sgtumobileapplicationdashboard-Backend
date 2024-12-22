@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Student = require("../models/Student");
-const { z } = require("zod"); // Import Zod
+const { z } = require("zod");
 require("dotenv").config();
 const dbConnect = require("../middlewares/db");
 
