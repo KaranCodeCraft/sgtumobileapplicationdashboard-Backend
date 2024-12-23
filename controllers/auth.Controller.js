@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { z } = require("zod"); // Import Zod
 require("dotenv").config();
-const dbConnect = require("../middlewares/db");
 
 // Zod schema for signup validation
 const signupSchema = z.object({
@@ -35,7 +34,7 @@ const signup = async (req, res) => {
     return res.status(400).json({ message: err.errors[0].message });
   }
 
-  await dbConnect();
+
 
   try {
     // Check if the user already exists
@@ -80,8 +79,8 @@ const login = async (req, res) => {
 
   try {
     // Find the user by email
-    console.log(email);
-    await dbConnect();
+    // console.log(email);
+
     
     const user = await User.findOne({ email });
     if (!user) {
@@ -96,7 +95,7 @@ const login = async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );

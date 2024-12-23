@@ -7,7 +7,7 @@ const studentSchema = new mongoose.Schema({
     minlength: [1, "Name is required"],
   },
   enrollmentNumber: {
-    type: Number,
+    type: String,
     unique: true,
     required: [true, "Enrollment Number is required"],
     min: [1, "Enrollment Number must be greater than or equal to 1"],

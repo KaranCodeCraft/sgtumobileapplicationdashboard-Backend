@@ -5,6 +5,11 @@ const authRoutes = require("./routes/auth.Routes");
 const studentRoutes = require("./routes/student.Routes"); 
 const bulkStudentRoutes = require("./routes/bulkStudent.Routes"); 
 const path = require("path");
+const dbConnect = require("./middlewares/db");
+const { verifyToken, checkRole } = require("./middlewares/auth");
+
+
+dbConnect();
 
 const app = express();
 app.use(express.json()); 
@@ -29,11 +34,11 @@ const upload = multer({
 
 app.use("/auth", authRoutes); 
 app.use("/student", studentRoutes);
-app.use("/bulkupload", upload.single("file"), bulkStudentRoutes);
+app.use("/bulkupload",verifyToken,checkRole("admin"), upload.single("file"), bulkStudentRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: err.message, error: "Developer" });
+    return res.status(400).json({ message: err.message, error: "MulterError" });
   } else if (err) {
     return res.status(400).json({ message: err.message });
   }

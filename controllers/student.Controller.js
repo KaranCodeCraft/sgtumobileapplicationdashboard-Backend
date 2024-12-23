@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const Student = require("../models/Student");
 const { z } = require("zod");
 require("dotenv").config();
-const dbConnect = require("../middlewares/db");
 
 // Zod schema for signup validation
 const signupSchema = z.object({
@@ -55,7 +54,6 @@ const registerStudent = async (req, res) => {
     return res.status(400).json({ message: err.errors[0].message });
   }
 
-  await dbConnect();
 
   try {
     // Check if the student already exists
@@ -126,4 +124,24 @@ const loginStudent = async (req, res) => {
   }
 };
 
-module.exports = { registerStudent, loginStudent };
+const allStudent = async (req, res) => {
+  try {
+    // Fetch all students from the database
+    const students = await Student.find();
+
+    // Return the list of students as a response
+    res.status(200).json({
+      success: true,
+      data: students,
+    });
+  } catch (error) {
+    // Handle any potential errors
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch students",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { registerStudent, loginStudent, allStudent };
