@@ -22,7 +22,7 @@ const saveStudentsToDatabase = async (students) => {
   try {
     // Attempt to insert students
     const result = await Student.insertMany(students, { ordered: false });
-    console.log("Successfully inserted documents:", result);
+    console.log("Successfully inserted documents:");
     return { success: true, inserted: result, failed: [] };
   } catch (error) {
     console.error("Error saving students:", error);
@@ -77,6 +77,19 @@ const bulkStudenthandle = async (req, res) => {
     // Validate each student against the schema
     studentsData.forEach((student) => {
       try {
+         if (!student.appRegistrationDetails) {
+           student.appRegistrationDetails = {
+             date: null, // Default to current date
+             status: false, // Default registration status to false
+           };
+         }
+
+         if (!student.subscriptionDetails) {
+           student.subscriptionDetails = {
+             isActive: false, // Default subscription status to inactive
+             expiryDate: null, // Default expiry date to null
+           };
+         }
         const validatedStudent = studentSchema.parse(student);
         validStudents.push(validatedStudent);
       } catch (error) {
@@ -97,7 +110,9 @@ const bulkStudenthandle = async (req, res) => {
         invalidStudents,
       });
     }
-
+    console.log("" + validStudents);
+    console.log("" + invalidStudents);
+    
     // Save valid students to the database
     const isSaved = await saveStudentsToDatabase(validStudents);
     const { inserted, failed, success } = isSaved;
