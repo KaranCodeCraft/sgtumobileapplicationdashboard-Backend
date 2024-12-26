@@ -8,8 +8,6 @@ const Otp = require("../models/Otp");
 
 const { SANDBOX_API_KEY, SANDBOX_API_SECRET } = process.env;
 
-
-
 // Zod schema for signup validation
 const signupSchema = z.object({
   enrollmentNumber: z.string().min(1, "Enrollment Number is required"),
@@ -147,7 +145,6 @@ const registerStudent = async (req, res) => {
   }
 };
 
-
 // Verfiy OTP
 const verifyOtp = async (req, res) => {
   try {
@@ -195,7 +192,8 @@ const verifyOtp = async (req, res) => {
       reference_id,
       otp,
     };
-
+    console.log("check 1");
+    
     const verifyResponse = await axios.post(
       "https://api.sandbox.co.in/kyc/aadhaar/okyc/otp/verify",
       verifyBody,

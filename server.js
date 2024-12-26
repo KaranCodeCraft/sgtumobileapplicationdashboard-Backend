@@ -8,8 +8,9 @@ const path = require("path");
 const dbConnect = require("./middlewares/db");
 const { verifyToken, checkRole } = require("./middlewares/auth");
 
-
-dbConnect();
+dbConnect().then(()=>{
+  SuperAdmin();
+});
 
 const app = express();
 app.use(express.json()); 
@@ -45,6 +46,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.listen(5005, () => {
+  console.log("Server running on port 5005");
 });
