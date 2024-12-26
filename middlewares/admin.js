@@ -9,7 +9,7 @@ async function checkAndCreateSuperAdmin() {
       console.log("Superadmin not found, creating one...");
 
       const newSuperAdmin = new User({
-        username: "superadmin",
+        name: "superadmin",
         email: "admin@admin.com",
         password: "securepassword123",
         role: "admin",
