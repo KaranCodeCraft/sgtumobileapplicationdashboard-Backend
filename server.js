@@ -7,6 +7,8 @@ const bulkStudentRoutes = require("./routes/bulkStudent.Routes");
 const path = require("path");
 const dbConnect = require("./middlewares/db");
 const { verifyToken, checkRole } = require("./middlewares/auth");
+const SuperAdmin = require("./middlewares/admin");
+
 
 dbConnect().then(()=>{
   SuperAdmin();
