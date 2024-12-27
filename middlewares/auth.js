@@ -4,7 +4,7 @@ require("dotenv").config();
 // Middleware to verify the token
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from "Bearer <token>"
-
+  // console.log(token);
   if (!token) {
     return res
       .status(401)
@@ -15,7 +15,6 @@ const verifyToken = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // Attach decoded token data to the request object
     // console.log(decoded);
-    
     next();
   } catch (err) {
     res
