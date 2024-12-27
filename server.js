@@ -9,7 +9,6 @@ const dbConnect = require("./middlewares/db");
 const { verifyToken, checkRole } = require("./middlewares/auth");
 const SuperAdmin = require("./middlewares/admin");
 
-
 dbConnect().then(()=>{
   SuperAdmin();
 });
@@ -38,6 +37,7 @@ const upload = multer({
 app.use("/auth", authRoutes); 
 app.use("/student", studentRoutes);
 app.use("/bulkupload",verifyToken,checkRole("admin"), upload.single("file"), bulkStudentRoutes);
+app.get("/verifyToken",verifyToken,((req,res)=>{ res.json({ message: "Access granted!", user: req.user }); }));
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
