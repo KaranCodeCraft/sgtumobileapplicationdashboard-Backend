@@ -11,6 +11,7 @@ async function checkAndCreateSuperAdmin() {
       const newSuperAdmin = new User({
         name: "superadmin",
         email: "admin@admin.com",
+        active: true,
         password: "securepassword123",
         role: "admin",
       });
