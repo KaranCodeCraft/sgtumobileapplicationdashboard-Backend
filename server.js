@@ -1,24 +1,25 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const authRoutes = require("./routes/auth.Routes"); 
-const studentRoutes = require("./routes/student.Routes"); 
-const bulkStudentRoutes = require("./routes/bulkStudent.Routes"); 
+const authRoutes = require("./routes/auth.Routes");
+const studentRoutes = require("./routes/student.Routes");
+const bulkStudentRoutes = require("./routes/bulkStudent.Routes");
 const path = require("path");
 const dbConnect = require("./middlewares/db");
 const { verifyToken, checkRole } = require("./middlewares/auth");
 const SuperAdmin = require("./middlewares/admin");
 const notificationRoute = require("./routes/notification.Routes");
+const countRoute = require("./routes/count.Routes");
 
-dbConnect().then(()=>{
+dbConnect().then(() => {
   SuperAdmin();
 });
 
 const app = express();
-app.use(express.json()); 
-app.use(cors()); 
+app.use(express.json());
+app.use(cors());
 
-const FILE_SIZE_LIMIT = 2 * 1024 * 1024; 
+const FILE_SIZE_LIMIT = 2 * 1024 * 1024;
 
 const upload = multer({
   dest: "uploads/",
@@ -31,15 +32,24 @@ const upload = multer({
         false
       );
     }
-    cb(null, true); 
+    cb(null, true);
   },
 });
 
-app.use("/auth", authRoutes); 
+app.use("/auth", authRoutes);
 app.use("/student", studentRoutes);
-app.use("/bulkupload",verifyToken,checkRole("admin"), upload.single("file"), bulkStudentRoutes);
-app.use("/notification", notificationRoute);
-app.get("/verifyToken",verifyToken,((req,res)=>{ return res.json({ message: "Access granted!", user: req.user }); }));
+app.use(
+  "/bulkupload",
+  verifyToken,
+  checkRole("admin"),
+  upload.single("file"),
+  bulkStudentRoutes
+);
+app.use("/notification", verifyToken, notificationRoute);
+app.use("/count", verifyToken, checkRole("admin"), countRoute);
+app.get("/verifyToken", verifyToken, (req, res) => {
+  return res.json({ message: "Access granted!", user: req.user });
+});
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
