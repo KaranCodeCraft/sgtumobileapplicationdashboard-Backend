@@ -10,6 +10,7 @@ const { verifyToken, checkRole } = require("./middlewares/auth");
 const SuperAdmin = require("./middlewares/admin");
 const notificationRoute = require("./routes/notification.Routes");
 const countRoute = require("./routes/count.Routes");
+const resultRoute = require("./routes/result.Routes");
 
 dbConnect().then(() => {
   SuperAdmin();
@@ -47,6 +48,7 @@ app.use(
 );
 app.use("/notification", verifyToken, notificationRoute);
 app.use("/count", verifyToken, checkRole("admin"), countRoute);
+app.use("/result", resultRoute);
 app.get("/verifyToken", verifyToken, (req, res) => {
   return res.json({ message: "Access granted!", user: req.user });
 });

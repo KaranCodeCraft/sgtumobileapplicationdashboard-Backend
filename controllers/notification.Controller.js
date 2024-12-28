@@ -14,7 +14,6 @@ const getNotifications = async (req, res) => {
   } catch (error) {
     // Log the error for debugging purposes
     console.error("Error fetching notifications:", error);
-
     // Return an error response
     return res.status(500).json({
       success: false,

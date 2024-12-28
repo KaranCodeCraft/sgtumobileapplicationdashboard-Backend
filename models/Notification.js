@@ -11,7 +11,7 @@ const notificationSchema = new mongoose.Schema({
     required: true,
   },
   tags: {
-    type: [String], // Array of strings, you can use tags like ['exam', 'holiday', 'announcement']
+    type: [String],
     required: true,
   },
   createdAt: {
