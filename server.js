@@ -7,14 +7,16 @@ const bulkStudentRoutes = require("./routes/bulkStudent.Routes");
 const path = require("path");
 const dbConnect = require("./middlewares/db");
 const { verifyToken, checkRole } = require("./middlewares/auth");
-const SuperAdmin = require("./middlewares/admin");
+// const SuperAdmin = require("./middlewares/admin");
 const notificationRoute = require("./routes/notification.Routes");
 const countRoute = require("./routes/count.Routes");
 const resultRoute = require("./routes/result.Routes");
 
-dbConnect().then(() => {
-  SuperAdmin();
-});
+// dbConnect().then(() => {
+//   SuperAdmin();
+// });
+
+dbConnect();
 
 const app = express();
 app.use(express.json());
