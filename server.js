@@ -46,7 +46,7 @@ app.use(
   upload.single("file"),
   bulkStudentRoutes
 );
-app.use("/notification", verifyToken, notificationRoute);
+app.use("/notification", notificationRoute);
 app.use("/count", verifyToken, checkRole("admin"), countRoute);
 app.use("/result", resultRoute);
 app.get("/verifyToken", verifyToken, (req, res) => {

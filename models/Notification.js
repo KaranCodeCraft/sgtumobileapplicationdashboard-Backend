@@ -13,6 +13,7 @@ const notificationSchema = new mongoose.Schema({
   tags: {
     type: [String],
     required: true,
+    enum: ["exam", "general", "result"],
   },
   createdAt: {
     type: Date,

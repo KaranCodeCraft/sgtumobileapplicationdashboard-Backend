@@ -1,4 +1,15 @@
-const Notification = require("../models/Notification"); // Import the model
+const Notification = require("../models/Notification"); 
+const {z} = require("zod")
+
+const allowedTags = ["exam", "general", "result"];
+
+const notificationSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  message: z.string().min(1, "Message is required"),
+  tags: z.array(z.string().refine(tag => allowedTags.includes(tag),{
+    message: "Invalid tag"
+  })).min(1, "At least one tag is required"),
+})
 
 // Get all notifications
 const getNotifications = async (req, res) => {
@@ -35,6 +46,15 @@ const addNotification = async (req, res) => {
       });
     }
 
+    try {
+      notificationSchema.parse(req.body);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.errors[0].message,
+      });
+    }
+
     // Create a new notification instance
     const newNotification = new Notification({
       title,
@@ -63,7 +83,73 @@ const addNotification = async (req, res) => {
   }
 };
 
+// Patch a notification
+const patchNotification = async (req, res) => {
+    try {
+      const {id} = req.params;
+      const {title, message, tags} = req.body;
+      // Validate the required fields
+      try {
+        notificationSchema.parse(req.body);
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+          message: error.errors[0].message,
+        });
+      }
+      const notification = await Notification.findByIdAndUpdate(id,{title, message, tags},{new: true});
+      if (!notification) {
+        return res.status(404).json({
+          success: false,
+          message: "Notification not found.",
+        });
+      }
+      
+      return res.status(200).json({
+        success: true,
+        message: "Notification updated successfully.",
+        notification,
+      });
+
+
+    } catch (error) {
+      console.error("Error updating notification:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update notification. Please try again later.",
+      });
+    }
+}
+
+// delete a notification
+const deleteNotification = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const notification = await Notification.findByIdAndDelete(id);
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found.",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Notification deleted successfully.",
+      notification,
+    });
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete notification. Please try again later.",
+    });
+  }
+}
+
+// Export the controller functions
 module.exports = {
   getNotifications,
   addNotification,
+  patchNotification,
+  deleteNotification,
 };
