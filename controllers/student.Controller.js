@@ -300,7 +300,8 @@ const loginStudent = async (req, res) => {
       return res.status(200).json({
         token,
         message: "Login successful",
-        name: `${student.name}`, // Full name
+        name: `${student.name}`,
+        id: `${student._id}`,
       });
     } else {
       return res
