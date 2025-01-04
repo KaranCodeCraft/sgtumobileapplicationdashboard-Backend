@@ -5,6 +5,7 @@ const notificationSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
   },
   message: {
     type: String,

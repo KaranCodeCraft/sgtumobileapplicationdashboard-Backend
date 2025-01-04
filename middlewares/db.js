@@ -18,6 +18,7 @@ if (!cached) {
 async function dbConnect() {
   if (cached.conn) {
     // Return existing connection
+    console.log("MongoDB connected successfully.");
     return cached.conn;
   }
 
@@ -25,10 +26,7 @@ async function dbConnect() {
     // Create a new connection
     console.log("Establishing a new connection to MongoDB...");
     cached.promise = mongoose
-      .connect(MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
+      .connect(MONGO_URI)
       .then((mongoose) => {
         console.log("MongoDB connected successfully.");
         return mongoose;
