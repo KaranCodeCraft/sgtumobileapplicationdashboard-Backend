@@ -24,6 +24,7 @@ const addStudentResult = async (req, res) => {
     });
 
     if (existingResult) {
+      fs.unlinkSync(req.file.path);
       return res.status(400).json({
         success: false,
         message: "Result already published for this semester.",
