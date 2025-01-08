@@ -15,7 +15,7 @@ const resultSchema = new mongoose.Schema({
         required: true,
       },
       resultPdf: {
-        type: Buffer,
+        type: String,
         required: true,
       },
       status: {

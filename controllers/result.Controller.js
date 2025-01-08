@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const Result = require("../models/Result");
 
 // Upload and save PDF in MongoDB
@@ -14,9 +15,6 @@ const addStudentResult = async (req, res) => {
       });
     }
 
-    // Read the uploaded file
-    const pdfData = fs.readFileSync(req.file.path);
-
     // Check if the result already exists
     const existingResult = await Result.findOne({
       student: studentId,
@@ -30,6 +28,24 @@ const addStudentResult = async (req, res) => {
         message: "Result already published for this semester.",
       });
     }
+    
+    // Check for dir and create if not exists
+    const resultFolder = path.join(__dirname, "../result");
+    if (!fs.existsSync(resultFolder)) {
+      fs.mkdirSync(resultFolder);
+    }
+    
+    // Move the file to the result folder
+    const newFilePath = path.join(
+      resultFolder,
+      `${studentId}_semester${semesterNumber}.pdf`
+    );
+
+
+    const tempFilePath = req.file.path;
+     
+     fs.renameSync(tempFilePath, newFilePath);
+
 
     const result = await Result.findOneAndUpdate(
       { student: studentId },
@@ -37,16 +53,13 @@ const addStudentResult = async (req, res) => {
         $push: {
           semesters: {
             semesterNumber,
-            resultPdf: pdfData, // Store binary data
+            resultPdf: newFilePath, // Store binary data
             status,
           },
         },
       },
       { new: true, upsert: true }
     );
-
-    // Delete the file from temporary storage
-    fs.unlinkSync(req.file.path);
 
     res.status(201).json({
       success: true,
