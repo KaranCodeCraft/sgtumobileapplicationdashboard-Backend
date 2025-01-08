@@ -79,37 +79,37 @@ const getStudentResult = async (req, res) => {
    try {
      const { id } = req.params;
      const { semesterNumber } = req.query;
-    // Get all result by student ID
-     if(!semesterNumber){
-        try {
-          const result = await Result.findOne({ student: id });
-          if (!result) {
-            return res.status(404).json({
-              success: false,
-              message: "Result not Published.",
-            });
-          }
-          // console.log(result.semesters);
-          
-          const tosendresult = []
-          result.semesters.forEach((sem)=>{
-            tosendresult.push({
-              semesterNumber: sem.semesterNumber,
-              status: sem.status,
-            })
-          })
-          return res.status(200).json({
-            success: true,
-            result: tosendresult,
-          });
-        } catch (error) {
-          res.status(500).json({
-            success: false,
-            message: "Failed to retrieve result. Please try again later.",
-          });
-        }
+     // Get all result by student ID
+     if (!semesterNumber) {
+       try {
+         const result = await Result.findOne({ student: id });
+         if (!result) {
+           return res.status(404).json({
+             success: false,
+             message: "Result not Published.",
+           });
+         }
+         // console.log(result.semesters);
+
+         const tosendresult = [];
+         result.semesters.forEach((sem) => {
+           tosendresult.push({
+             semesterNumber: sem.semesterNumber,
+             status: sem.status,
+           });
+         });
+         return res.status(200).json({
+           success: true,
+           result: tosendresult,
+         });
+       } catch (error) {
+         res.status(500).json({
+           success: false,
+           message: "Failed to retrieve result. Please try again later.",
+         });
+       }
      }
-    //  Find the result by student ID and semester number
+     //  Find the result by student ID and semester number
      const result = await Result.findOne({
        student: id,
        "semesters.semesterNumber": semesterNumber,
@@ -125,10 +125,19 @@ const getStudentResult = async (req, res) => {
        (sem) => sem.semesterNumber === parseInt(semesterNumber)
      );
 
-     if (!semester) {
+     if (!semester || !semester.resultPdf) {
        return res.status(404).json({
          success: false,
          message: "Semester result not found.",
+       });
+     }
+
+     // Read and send the PDF file
+     const filePath = semester.resultPdf; // Path stored in DB
+     if (!fs.existsSync(filePath)) {
+       return res.status(404).json({
+         success: false,
+         message: "Result file not found on server.",
        });
      }
 
@@ -137,7 +146,8 @@ const getStudentResult = async (req, res) => {
        "Content-Disposition",
        `attachment; filename=Result_Semester_${semesterNumber}.pdf`
      );
-     res.send(semester.resultPdf);
+     const fileStream = fs.createReadStream(filePath);
+     fileStream.pipe(res);
    } catch (error) {
      res.status(500).json({
        success: false,
