@@ -58,6 +58,24 @@ const studentSchema = new mongoose.Schema({
     required: [true, "Stream is required"],
     minlength: [1, "Stream is required"],
   },
+  document:{
+    aadhar:{
+      type: String,
+      default: null,
+    },
+    photo:{
+      type: String,
+      default: null,
+    },
+    pan:{
+      type: String,
+      default: null,
+    },
+    interMarksheet:{
+      type: String,
+      default: null,
+    },
+  },
   appRegisDetails: {
     date: {
       type: Date,

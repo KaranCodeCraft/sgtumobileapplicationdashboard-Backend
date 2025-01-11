@@ -66,6 +66,7 @@ const addStudentResult = async (req, res) => {
       message: "Result added successfully."
     });
   } catch (error) {
+    fs.unlinkSync(newFilePath);
     console.error("Error adding result:", error);
     res.status(500).json({
       success: false,
