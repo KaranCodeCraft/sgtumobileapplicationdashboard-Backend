@@ -55,27 +55,45 @@ const documentupload = async (req, res) => {
         res.status(500).json({message: "Failed to upload document. Please try again later."});
     }
 }
+
 const documentview = async (req, res) => {
   try {
     const { studentId, docName } = req.body;
+
     // Validate the request body
     documentUploadSchema.parse({ studentId, docName });
+
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
+
     const documentPath = student.document[docName];
     if (!documentPath) {
       return res.status(404).json({ message: "Document not found" });
     }
-    const document = fs.readFileSync(documentPath);
+
+    // Check if the file exists before sending
+    if (!fs.existsSync(documentPath)) {
+      return res.status(404).json({ message: "File not found on server" });
+    }
+
+    // Stream the PDF file to the client
     res.contentType("application/pdf");
-    res.send(document);
+    const fileStream = fs.createReadStream(documentPath);
+    fileStream.pipe(res);
+
+    fileStream.on("error", (error) => {
+      console.error("Error while streaming the file:", error);
+      res.status(500).json({ message: "Error streaming the document" });
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     if (error.errors) {
       return res.status(400).json({ message: error.errors[0].message });
-    } 
+    }
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
 module.exports = { documentupload, documentview };
